@@ -1,0 +1,64 @@
+{
+ "$comment": "HYPOTHETICAL illustration of a memory-constrained legacy target. Limits and formats are invented round numbers to exercise the profile machinery; they describe no real console or device and contain no platform-SDK information. Nothing here is validated.",
+ "profileFormatVersion": "0.1.0",
+ "profileId": "legacy-constrained",
+ "title": "Hypothetical legacy-constrained target (illustration only)",
+ "status": "hypothetical",
+ "evidence": [],
+ "textureLimits": {
+  "maxWidth": 512,
+  "maxHeight": 512,
+  "maxLongEdge": 512,
+  "maxShortEdge": 512,
+  "maxPixels": 262144,
+  "requirePowerOfTwo": true,
+  "respectFirstMipDensity": true
+ },
+ "targets": [
+  {
+   "targetId": "legacy-16bit",
+   "backend": "raster",
+   "container": "other",
+   "status": "not-validated",
+   "allowedFormats": ["rgb565", "rgba4444", "rgba5551"],
+   "formats": { "color-opaque": "rgb565", "color-alpha": "rgba4444" },
+   "mips": "full-chain"
+  },
+  {
+   "targetId": "palettised",
+   "backend": "raster",
+   "container": "other",
+   "status": "not-validated",
+   "allowedFormats": ["pal8"],
+   "formats": { "color-opaque": "pal8", "color-alpha": "pal8" },
+   "mips": "full-chain"
+  },
+  {
+   "targetId": "astc",
+   "backend": "raster",
+   "container": "ktx2",
+   "status": "not-validated",
+   "allowedFormats": ["astc-4x4", "astc-6x6", "astc-8x8"],
+   "formats": { "color-opaque": "astc-6x6", "color-alpha": "astc-4x4", "normal": "astc-4x4", "mask": "astc-8x8" },
+   "mips": "full-chain"
+  },
+  {
+   "targetId": "etc2",
+   "backend": "raster",
+   "container": "ktx2",
+   "status": "not-validated",
+   "allowedFormats": ["etc2-rgb8", "etc2-rgba8", "eac-r11", "eac-rg11"],
+   "formats": { "color-opaque": "etc2-rgb8", "color-alpha": "etc2-rgba8", "normal": "eac-rg11", "mask": "eac-r11" },
+   "mips": "full-chain"
+  }
+ ],
+ "mipPolicy": { "filter": "box", "alphaCoveragePreserve": true, "wrapForTileable": true },
+ "memoryBudget": { "bytes": 33554432, "accountingTarget": "legacy-16bit", "includeMips": true, "policy": "reduce-largest" },
+ "preprocessing": {
+  "downscale": { "policy": "halve-until-fit", "filter": "box", "neverBelowClassic": false },
+  "colorSpace": { "color": "srgb", "data": "linear", "resampleInLinear": false },
+  "alpha": { "mode": "preserve", "premultiply": false, "dilateEdges": true, "cutoutCoverage": true },
+  "normals": { "renormalizeAfterResample": true }
+ },
+ "materialMaps": { "enabled": false, "roles": [] }
+}

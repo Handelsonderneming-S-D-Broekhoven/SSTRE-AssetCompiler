@@ -1,0 +1,7 @@
+{
+ "$comment": "ADR-0009 defaults served to the pc-low-memory platform profile (2048 px cap, 512 MiB budget, reduce-largest).",
+ "configFormatVersion": "0.1.0",
+ "configId": "low-memory",
+ "layers": {},
+ "platformProfile": "pc-low-memory"
+}

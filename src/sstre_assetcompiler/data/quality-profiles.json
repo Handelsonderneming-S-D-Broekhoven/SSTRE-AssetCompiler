@@ -1,0 +1,47 @@
+{
+ "$comment": "Built-in AI Enhancement quality profiles (ADR-0009 layer 6). A profile only states WHAT may be processed and to which scale; the per-asset recipe (asset-recipe schema) and the locked models come from the AI track (Remaster-Toolkit). Modes: sr = deterministic super-resolution only; sr+refine = SR plus controlled generative refinement (RD-003). Categories not listed use defaultMode.",
+ "qualityProfileFormatVersion": "0.1.0",
+ "profiles": {
+  "off": {
+   "enabled": false,
+   "description": "No AI processing; every asset keeps its selected source."
+  },
+  "conservative": {
+   "enabled": true,
+   "description": "Deterministic SR x2 of opaque world textures; UI, fonts, technical maps and effects untouched.",
+   "defaultMode": "skip",
+   "processSources": ["classic-base", "hd-quality"],
+   "classes": {
+    "architecture": { "mode": "sr", "scale": 2 },
+    "terrain": { "mode": "sr", "scale": 2 },
+    "vegetation": { "mode": "sr", "scale": 2 },
+    "props": { "mode": "sr", "scale": 2 },
+    "items": { "mode": "sr", "scale": 2 },
+    "player": { "mode": "sr", "scale": 2 },
+    "enemy": { "mode": "sr", "scale": 2 },
+    "weapon": { "mode": "sr", "scale": 2 },
+    "sky": { "mode": "sr", "scale": 2 },
+    "detail": { "mode": "sr", "scale": 2 }
+   }
+  },
+  "standard": {
+   "enabled": true,
+   "description": "SR x4 with generative refinement for tileable world surfaces; SR x4 for characters and props; SR x2 for effects.",
+   "defaultMode": "skip",
+   "processSources": ["classic-base", "hd-quality", "hd-artwork"],
+   "classes": {
+    "architecture": { "mode": "sr+refine", "scale": 4 },
+    "terrain": { "mode": "sr+refine", "scale": 4 },
+    "vegetation": { "mode": "sr", "scale": 4 },
+    "props": { "mode": "sr", "scale": 4 },
+    "items": { "mode": "sr", "scale": 4 },
+    "player": { "mode": "sr", "scale": 4 },
+    "enemy": { "mode": "sr", "scale": 4 },
+    "weapon": { "mode": "sr", "scale": 4 },
+    "sky": { "mode": "sr+refine", "scale": 4 },
+    "detail": { "mode": "sr", "scale": 4 },
+    "effects": { "mode": "sr", "scale": 2 }
+   }
+  }
+ }
+}

@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 Handelsonderneming S.D. Broekhoven, trading as ITEagle Europe
 # SPDX-License-Identifier: GPL-3.0-only
-"""Command line: ``sstre-ac fingerprint | detect | inventory | tex-* | select-source``.
+"""Command line: ``sstre-ac fingerprint | detect | inventory | tex-* | select-source | plan``.
 
 All commands are read-only on the installs. Output goes to stdout or to the
 file given with ``-o``; keep outputs in a local workspace, never in a repo.
@@ -101,7 +101,65 @@ def build_parser() -> argparse.ArgumentParser:
                     help="JSON list of selection requests (see docs/source-selection.md)")
     ss.add_argument("--policy", type=Path, help="policy/threshold JSON (default: built in)")
     ss.add_argument("-o", "--out-dir", type=Path, required=True)
+    pl = sub.add_parser("plan", help="resolve the layered per-asset build plan (ADR-0009)")
+    pl.add_argument("--config", type=Path, required=True, help="build-config JSON")
+    pl.add_argument("--selection", type=Path, action="append", required=True,
+                    help="directory of sel-*.json records or a JSON file (repeatable)")
+    pl.add_argument("--assets", type=Path, help="asset facts: texture-set READY.json or a JSON list")
+    pl.add_argument("--only-listed", action="store_true",
+                    help="plan only the assets listed in --assets")
+    pl.add_argument("--out", type=Path, required=True, help="build manifest to write")
+    pl.add_argument("--summary", type=Path, help="also write the summary block here")
+    pl.add_argument("--canonical", action="store_true",
+                    help="write RFC 8785 canonical bytes instead of the indented form")
+    vc = sub.add_parser("validate-config", help="check a build-config, its approvals and packs")
+    vc.add_argument("--config", type=Path, required=True)
+    vc.add_argument("--verify-files", action="store_true",
+                    help="also re-hash every file listed in the asset packs")
+    pf = sub.add_parser("profiles", help="list built-in platform and quality profiles")
+    pf.add_argument("--show", metavar="ID", help="print one platform profile")
     return ap
+
+
+def _layer_cmd(args) -> int:
+    from . import layers
+    from . import platform_profiles as plat
+    from .jcs import canonicalize, dumps_pretty
+    if args.cmd == "profiles":
+        if args.show:
+            sys.stdout.write(dumps_pretty(plat.load_builtin(args.show)))
+            return 0
+        for pid in plat.BUILTIN_PROFILES:
+            p = plat.load_builtin(pid)
+            print(f"platform {pid:20s} {p['status']:12s} {p['title']}")
+        for qid, q in sorted(layers.builtin_quality_profiles().items()):
+            print(f"quality  {qid:20s} {q.get('description', '')}")
+        return 0
+    if args.cmd == "validate-config":
+        cfg, warnings = layers.validate_config(args.config, verify_files=args.verify_files)
+        for w in warnings:
+            print(f"warning: {w}", file=sys.stderr)
+        for k, v in sorted(cfg["pins"].items()):
+            print(f"{k} {v}")
+        en = [n for n in layers.LAYERS if n != "ai-enhancement" and cfg["layers"][n]["enabled"]]
+        print(f"{args.config}: OK; layers on: {', '.join(en)}; quality profile "
+              f"{cfg['qualityProfileId']}; platform profile {cfg['platformProfile']['profileId']}",
+              file=sys.stderr)
+        return 0
+    manifest = layers.build_plan(args.config, args.selection, args.assets, args.only_listed)
+    args.out.parent.mkdir(parents=True, exist_ok=True)
+    if args.canonical:
+        args.out.write_bytes(canonicalize(manifest) + b"\n")
+    else:
+        args.out.write_bytes(dumps_pretty(manifest).encode("utf-8"))
+    if args.summary:
+        args.summary.write_bytes(dumps_pretty(
+            {"planHash": manifest["planHash"], "effectiveConfigHash": manifest["effectiveConfigHash"],
+             "summary": manifest["summary"]}).encode("utf-8"))
+    s = manifest["summary"]
+    print(f"plan: {s['assets']} assets; supplied by {s['suppliedBy']}; AI {s['aiEnhancement']};"
+          f" planHash {manifest['planHash']}", file=sys.stderr)
+    return 0
 
 
 def _tex_cmd(args) -> int:
@@ -149,6 +207,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.cmd.startswith("tex-"):
             return _tex_cmd(args)
+        if args.cmd in ("plan", "validate-config", "profiles"):
+            return _layer_cmd(args)
         if args.cmd == "select-source":
             from .source_select import run_cli
             return run_cli(args.requests, args.policy, args.out_dir)

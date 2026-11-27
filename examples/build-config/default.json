@@ -1,0 +1,16 @@
+{
+ "$comment": "ADR-0009 defaults: Classic Base, HD Quality Improvements and HD Material Maps on; HD Artwork, HD Interface and overrides off; no AI processing; PC profile.",
+ "configFormatVersion": "0.1.0",
+ "configId": "default",
+ "layers": {
+  "classic-base": { "enabled": true },
+  "hd-quality": { "enabled": true },
+  "hd-material-maps": { "enabled": true, "roles": ["normal", "gloss", "ao", "height"] },
+  "hd-artwork": { "enabled": false },
+  "hd-interface": { "enabled": false, "includeRelayout": false },
+  "ai-enhancement": { "qualityProfile": "off", "packs": [] },
+  "overrides": { "enabled": false, "packs": [] }
+ },
+ "platformProfile": "pc-default",
+ "approvals": null
+}
