@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Handelsonderneming-S-D-Broekhoven/SSTRE-AssetCompiler/src/sstre_assetcompiler/data/edition-fingerprints.schema.json",
+  "title": "SSTRE edition fingerprint set",
+  "$comment": "STATUS: PROPOSAL (Phase 1, POC-03). A fingerprint file lists the expected top-level files of known editions. Real fingerprint files describe proprietary game files: they are generated locally by the user ('sstre-ac fingerprint') and are never committed until backlog GATE-05 clears publication. The examples below are synthetic.",
+  "type": "object",
+  "required": ["format", "format_version", "profiles"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "format": { "const": "sstre-edition-fingerprints" },
+    "format_version": { "const": 1 },
+    "profiles": { "type": "array", "items": { "$ref": "#/$defs/profile" } }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "profile": {
+      "type": "object",
+      "required": ["profile_id", "edition", "files"],
+      "additionalProperties": false,
+      "properties": {
+        "profile_id": { "type": "string", "pattern": "^[a-z0-9_.-]+$" },
+        "edition": { "enum": ["classic_tfe", "classic_tse", "hd_tfe", "hd_tse", "fusion"] },
+        "description": { "type": "string" },
+        "steam_app_id": { "type": "integer" },
+        "steam_build_id": { "type": "integer" },
+        "files": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/file" } }
+      }
+    },
+    "file": {
+      "type": "object",
+      "required": ["relpath", "size_bytes", "sha256"],
+      "additionalProperties": false,
+      "properties": {
+        "relpath": { "type": "string", "pattern": "^[^/\\\\:][^\\\\:]*$", "description": "Path relative to the install root, '/'-separated, no '..' components." },
+        "size_bytes": { "type": "integer", "minimum": 0 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "role": { "enum": ["archive", "executable", "other"], "default": "archive" },
+        "edition": {
+          "enum": ["classic_tfe", "classic_tse", "hd_tfe", "hd_tse", "fusion_hd_tfe", "fusion_hd_tse", "fusion_other", "unknown"],
+          "description": "Source edition of this file's content when it differs from the profile edition (e.g. Fusion game packs)."
+        },
+        "load_priority": { "type": "integer", "description": "Override order, higher wins. Omit when unknown." }
+      }
+    }
+  },
+  "examples": [
+    {
+      "format": "sstre-edition-fingerprints",
+      "format_version": 1,
+      "profiles": [
+        {
+          "profile_id": "example-classic-tfe",
+          "edition": "classic_tfe",
+          "steam_app_id": 1,
+          "steam_build_id": 2,
+          "files": [
+            { "relpath": "base.gro", "size_bytes": 1024, "sha256": "0000000000000000000000000000000000000000000000000000000000000001", "role": "archive" },
+            { "relpath": "patch.gro", "size_bytes": 64, "sha256": "0000000000000000000000000000000000000000000000000000000000000002", "role": "archive", "load_priority": 10 },
+            { "relpath": "bin/game.exe", "size_bytes": 4096, "sha256": "0000000000000000000000000000000000000000000000000000000000000003", "role": "executable" }
+          ]
+        }
+      ]
+    }
+  ]
+}

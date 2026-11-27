@@ -1,0 +1,33 @@
+# SPDX-FileCopyrightText: 2026 Handelsonderneming S.D. Broekhoven, trading as ITEagle Europe
+# SPDX-License-Identifier: GPL-3.0-only
+
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sstre-assetcompiler"
+version = "0.1.0.dev0"
+description = "SSTRE edition detection and asset inventory for user-supplied Serious Sam installs (unofficial)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "GPL-3.0-only" }
+authors = [{ name = "Handelsonderneming S.D. Broekhoven, trading as ITEagle Europe" }]
+dependencies = []
+
+[project.optional-dependencies]
+test = ["pytest>=7", "jsonschema>=4.18"]
+
+[project.scripts]
+sstre-ac = "sstre_assetcompiler.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+sstre_assetcompiler = ["data/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra"
