@@ -7,12 +7,15 @@ The Second Encounter. Independent of Croteam and Devolver Digital.
 
 ## Status
 
-**Phase 1: technical validation (proof of concept).** The only working code so
-far is local edition detection and archive inventory (`sstre-ac detect`,
-`sstre-ac inventory`; see Development below). It reads installs without
-modifying them and writes its reports to a local workspace. There is no
-extraction, conversion, mapping or packaging yet. The format research it builds
-on is in the SSTRE umbrella (`docs/research/RD-002-hd-assets.md`).
+**Sprint 2: proof of concept.** Working code: local edition detection and
+archive inventory (`sstre-ac detect`, `sstre-ac inventory`), a lossless Classic
+`.tex` codec with PNG export/import (`sstre-ac tex-*`, see
+[docs/classic-tex-codec.md](./docs/classic-tex-codec.md)) and a per-asset
+Classic/HD/HD-art source selector (`sstre-ac select-source`, see
+[docs/source-selection.md](./docs/source-selection.md)). Everything reads
+installs without modifying them and writes to a local workspace. There is no
+packaging yet. The format research it builds on is in the SSTRE umbrella
+(`docs/research/RD-002-hd-assets.md`, `docs/experiments/EXP-012-*`).
 
 ## Role
 
@@ -55,7 +58,7 @@ Adapter responsibilities are described in [docs/adapters.md](./docs/adapters.md)
 | Item | Status |
 |---|---|
 | A legally acquired Serious Sam installation (Classic and/or HD) | Required once code exists; never committed |
-| Implementation language and runtime | Python ≥ 3.10 for the Phase 1 proof of concept (stdlib only); final choice still open |
+| Implementation language and runtime | Python ≥ 3.10 for the proof of concept; inventory is stdlib only, the texture codec and selector need the pinned `[image]` extra (numpy 2.2.6, BSD-3-Clause; Pillow 12.3.0, MIT-CMU/HPND); final choice still open |
 | Runtime asset formats to produce | **TBD** — depends on engine selection (ADR-005) |
 | GPU | Not required by this repository itself (TBD whether any step needs one) |
 
@@ -73,6 +76,9 @@ installs, extracts nothing to disk and runs no game binaries.
 | `archives.py` | zip central-directory scan, in-memory SHA-256 of entries, unsafe-name rejection |
 | `texheader.py` | Classic `.tex` `TVER`/`TDAT` header reader (clean-room, from SSTRE RD-002 §5) |
 | `inventory.py` | `asset-inventory.schema.json` documents, override/shadowing resolution |
+| `classic_tex.py` | lossless Classic `.tex` decoder/encoder (v3 + v4, frames, animations, effect payloads), higher-density replacements with identical logical size (clean-room, EXP-012) |
+| `texio.py`, `texextract.py` | PNG + JSON sidecar export/import; extraction of a user-selected texture set; round-trip counts |
+| `source_select.py` | per-asset Classic/HD/HD-art selection with metrics, ordered rules and `source-selection.schema.json` records |
 
 Set up and test (pytest uses synthetic fixtures generated at test time; the
 schema tests look for an SSTRE checkout next to this repository or in
