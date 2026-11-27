@@ -14,5 +14,4 @@ Repository-specific notes:
   weights or secrets. The [`.gitignore`](./.gitignore) blocks the common cases; it is a
   safety net, not permission.
 
-Licensing: pending owner confirmation — proposed GPL-3.0 (see SSTRE
-`docs/research/RD-007-licensing.md`).
+Licensing: `GPL-3.0-only`. Sign every commit off under the DCO (`git commit -s`).
