@@ -1,0 +1,12 @@
+{
+ "$comment": "Opt-in example: HD Artwork and HD Interface (with re-laid-out UI) enabled; assets still need entries in the approvals file. Conservative AI processing; AI outputs are consumed from packs listed under ai-enhancement.packs.",
+ "configFormatVersion": "0.1.0",
+ "configId": "hd-art-opt-in",
+ "layers": {
+  "hd-artwork": { "enabled": true },
+  "hd-interface": { "enabled": true, "includeRelayout": true },
+  "ai-enhancement": { "qualityProfile": "conservative", "packs": [] }
+ },
+ "platformProfile": "pc-default",
+ "approvals": { "path": "approvals.local.json" }
+}

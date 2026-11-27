@@ -82,3 +82,5 @@ with `--policy policy.json` (`{"thresholds": {...}, "hd_art_opt_in": false}`).
 candidate is listed with `hd_art.status = pending_owner_opt_in`. An owner
 opt-in (`hd_art_opt_in: true` in the policy, plus per-asset approval in
 SSTRE-Manifests) would build a separate, optional layer from those candidates.
+That layer is implemented by `sstre-ac plan` as ADR-0009 layers 4 (HD Artwork)
+and 5 (HD Interface, category `ui`); see [asset-layers.md](./asset-layers.md).

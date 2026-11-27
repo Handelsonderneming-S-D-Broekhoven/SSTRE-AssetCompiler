@@ -12,7 +12,9 @@ archive inventory (`sstre-ac detect`, `sstre-ac inventory`), a lossless Classic
 `.tex` codec with PNG export/import (`sstre-ac tex-*`, see
 [docs/classic-tex-codec.md](./docs/classic-tex-codec.md)) and a per-asset
 Classic/HD/HD-art source selector (`sstre-ac select-source`, see
-[docs/source-selection.md](./docs/source-selection.md)). Everything reads
+[docs/source-selection.md](./docs/source-selection.md)), and the layered build
+planner with platform profiles (`sstre-ac plan`, `validate-config`, `profiles`,
+see [docs/asset-layers.md](./docs/asset-layers.md)). Everything reads
 installs without modifying them and writes to a local workspace. There is no
 packaging yet. The format research it builds on is in the SSTRE umbrella
 (`docs/research/RD-002-hd-assets.md`, `docs/experiments/EXP-012-*`).
@@ -79,6 +81,9 @@ installs, extracts nothing to disk and runs no game binaries.
 | `classic_tex.py` | lossless Classic `.tex` decoder/encoder (v3 + v4, frames, animations, effect payloads), higher-density replacements with identical logical size (clean-room, EXP-012) |
 | `texio.py`, `texextract.py` | PNG + JSON sidecar export/import; extraction of a user-selected texture set; round-trip counts |
 | `source_select.py` | per-asset Classic/HD/HD-art selection with metrics, ordered rules and `source-selection.schema.json` records |
+| `layers.py` | ADR-0009 asset layers: build-config → resolved per-asset plan and frozen effective build manifest (`build-manifest.schema.json`) |
+| `platform_profiles.py` | declarative platform profiles (`data/platform-profiles/`): size limits, formats per target, mip policy, memory budget, preprocessing |
+| `jcs.py` | RFC 8785 canonical JSON and `sha256:` content hashes |
 
 Set up and test (pytest uses synthetic fixtures generated at test time; the
 schema tests look for an SSTRE checkout next to this repository or in
