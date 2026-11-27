@@ -1,0 +1,48 @@
+{
+ "$comment": "Built-in SSTRE platform profile for PCs with little VRAM or RAM (illustrative budget; not measured).",
+ "profileFormatVersion": "0.1.0",
+ "profileId": "pc-low-memory",
+ "title": "PC, low memory (2048 px cap, 512 MiB texture budget)",
+ "status": "provisional",
+ "evidence": ["EXP-012", "RD-006"],
+ "textureLimits": {
+  "maxWidth": 2048,
+  "maxHeight": 2048,
+  "maxLongEdge": 2048,
+  "maxShortEdge": 2048,
+  "maxPixels": 4194304,
+  "requirePowerOfTwo": false,
+  "respectFirstMipDensity": true
+ },
+ "targets": [
+  {
+   "targetId": "raster",
+   "backend": "raster",
+   "container": "se1-tex-v4",
+   "status": "validated",
+   "allowedFormats": ["rgb8", "rgba8"],
+   "formats": { "color-opaque": "rgb8", "color-alpha": "rgba8" },
+   "mips": "runtime-generated",
+   "evidence": ["EXP-012"]
+  },
+  {
+   "targetId": "rt",
+   "backend": "rt",
+   "container": "ktx2",
+   "status": "partial",
+   "allowedFormats": ["bc1", "bc3", "bc4", "bc5", "bc7"],
+   "formats": { "color-opaque": "bc1", "color-alpha": "bc7", "normal": "bc5", "mask": "bc4" },
+   "mips": "full-chain",
+   "evidence": ["EXP-014"]
+  }
+ ],
+ "mipPolicy": { "filter": "kaiser", "alphaCoveragePreserve": true, "wrapForTileable": true },
+ "memoryBudget": { "bytes": 536870912, "accountingTarget": "raster", "includeMips": true, "policy": "reduce-largest" },
+ "preprocessing": {
+  "downscale": { "policy": "halve-until-fit", "filter": "lanczos3", "neverBelowClassic": true },
+  "colorSpace": { "color": "srgb", "data": "linear", "resampleInLinear": true },
+  "alpha": { "mode": "preserve", "premultiply": false, "dilateEdges": true, "cutoutCoverage": true },
+  "normals": { "renormalizeAfterResample": true }
+ },
+ "materialMaps": { "enabled": true, "roles": ["normal"] }
+}
